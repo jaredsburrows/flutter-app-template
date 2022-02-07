@@ -50,9 +50,10 @@ jobs:
           xcrun simctl boot "${UDID:?No Simulator with this name found}"
 
       - name: Configure Flutter
-        uses: subosito/flutter-action@v1
+        uses: subosito/flutter-action@v2
         with:
-          flutter-version: 2.2.3
+          flutter-version: 2.10.0
+          channel: 'stable'
 
       - name: Turn off Dart and Flutter analytics
         run: |

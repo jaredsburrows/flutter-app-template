@@ -3,7 +3,8 @@ import 'package:url_strategy/url_strategy.dart';
 
 import 'app.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   setPathUrlStrategy();
   runApp(App());
 }
