@@ -20,13 +20,16 @@ jobs:
         java-version:
           - 11
         device:
-          - "iPhone 12 Pro Max"
+          - "iPhone 13 Pro Max"
 
     steps:
-      - name: Checkout project
+      - name: Checkout Project
         uses: actions/checkout@v2
 
-      - name: Cache Gradle dependencies
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Cache Gradle Dependencies
         uses: actions/cache@v2.1.0
         with:
           path: |
@@ -44,8 +47,10 @@ jobs:
           distribution: adopt
           java-version: ${{ matrix.java-version }}
 
-      - name: Start iOS simulator
+      - name: Start iOS Simulator
         run: |
+          echo "Listing devices"
+          xcrun xctrace list devices
           UDID=$(
             xcrun xctrace list devices 2>&1 |
             grep -m 1 "${{ matrix.device }}" |
@@ -55,15 +60,13 @@ jobs:
           xcrun simctl boot "${UDID:?No Simulator with this name found}"
 
       - name: Configure Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@v2.3.0
         with:
           flutter-version: 2.10.0
           channel: 'stable'
 
-      - name: Turn off Dart and Flutter analytics
-        run: |
-          dart --disable-analytics
-          flutter config --no-analytics
+      - name: Turn Off Flutter Analytics
+        run: flutter config --no-analytics
 
       - name: Build Android
         run: |
@@ -71,22 +74,21 @@ jobs:
           flutter build appbundle --release --obfuscate --split-debug-info build/app/outputs/symbols-appbundle --target-platform android-arm64 --suppress-analytics
 
       - name: Build iOS
-        run: |
-          flutter build ios --release --obfuscate --split-debug-info build/ios/outputs/symbols --no-codesign --suppress-analytics
+        run: flutter build ios --release --obfuscate --split-debug-info build/ios/outputs/symbols --no-codesign --suppress-analytics
 
-      - name: Build website
-        run: flutter build web --release --csp --pwa-strategy none --suppress-analytics
+      - name: Build Website
+        run: flutter build web --release --base-href /flutter-gradle-app-template/ --csp --pwa-strategy none --suppress-analytics
 
-      - name: Run analyzer
+      - name: Run Analyzer
         run: flutter analyze --suppress-analytics
 
-      - name: Run unit tests
+      - name: Run Unit Tests
         run: flutter test --coverage --suppress-analytics
 
-#      - name: Run Driver tests
+#      - name: Run Driver Tests
 #        run: flutter drive --target=test_driver/app.dart --suppress-analytics
 
-      - name: Upload artifacts
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         if: always()
         with:
@@ -106,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     needs:
-      - jvm
+      - build
 
     steps:
       - name: Checkout Project
