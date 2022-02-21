@@ -29,10 +29,16 @@ flutter pub upgrade --null-safety
 flutter build apk --debug
 ```
 
-**Release**
+**Release APK**
 
 ```shell
 flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64
+```
+
+**Release Bundle**
+
+```shell
+flutter build appbundle --release --obfuscate --split-debug-info build/app/outputs/symbols-appbundle --target-platform android-arm64
 ```
 
 ## Build the iOS app
