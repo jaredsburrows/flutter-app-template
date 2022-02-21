@@ -3,14 +3,10 @@
 set -e
 
 SLUG="jaredsburrows/flutter-gradle-app-template"
-BRANCH="master"
 
 # Delete any existing temporary website clone
 rm -rf temp-clone
 rm -rf web-latest
-
-# Replace the base href where the website is
-sed -i '' '14s/.*/      \<base href\=\"\/flutter-gradle-app-template\/\"\>/' build/web/index.html
 
 # Generate website
 cp -R build/web web-latest/
