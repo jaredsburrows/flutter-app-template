@@ -111,8 +111,38 @@ jobs:
             build/web
           if-no-files-found: warn
 
+  publish:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    needs:
+      - build
+
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v2.4.0
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1.0.4
+
+      - name: Configure JDK
+        uses: actions/setup-java@v2.5.0
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: Configure Flutter
+        uses: subosito/flutter-action@v2.3.0
+        with:
+          flutter-version: 2.10.0
+          channel: stable
+
+      - name: Build Website
+        run: flutter build web --release --base-href /flutter-gradle-app-template/ --suppress-analytics
+
       - name: Publish Website
-        run: .buildscript/publish-website.sh
-        if: github.repository == 'jaredsburrows/flutter-gradle-app-template' && github.ref == 'refs/heads/master'
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          user_name: "Github Actions"
+          user_email: "action@github.com"
