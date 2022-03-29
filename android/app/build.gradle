@@ -31,7 +31,7 @@ android {
   compileSdkVersion 31
 
   defaultConfig {
-    applicationId "com.jaredsburrows.example.flutter.flutter_gradle_app_template"
+    applicationId "com.jaredsburrows.example.flutter.flutter_app_template"
     minSdkVersion 21
     targetSdkVersion 31
     versionCode flutterVersionCode.toInteger()

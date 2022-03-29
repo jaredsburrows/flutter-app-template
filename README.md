@@ -1,7 +1,7 @@
 # Flutter Example Template
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![build](https://github.com/jaredsburrows/flutter-gradle-app-template/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/jaredsburrows/flutter-gradle-app-template/actions/workflows/build.yml)
+[![build](https://github.com/jaredsburrows/flutter-app-template/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/jaredsburrows/flutter-app-template/actions/workflows/build.yml)
 [![Twitter Follow](https://img.shields.io/twitter/follow/jaredsburrows.svg?style=social)](https://twitter.com/jaredsburrows)
 
 Gradle + Intellij + Flutter
