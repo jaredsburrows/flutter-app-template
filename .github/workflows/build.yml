@@ -73,7 +73,7 @@ jobs:
         run: flutter build ios --release --obfuscate --split-debug-info build/ios/outputs/symbols --no-codesign --suppress-analytics
 
       - name: Build Website
-        run: flutter build web --release --base-href /flutter-gradle-app-template/ --suppress-analytics
+        run: flutter build web --release --base-href /flutter-app-template/ --suppress-analytics
 
       - name: Run Analyzer
         run: flutter analyze --suppress-analytics
@@ -148,7 +148,7 @@ jobs:
           channel: stable
 
       - name: Build Website
-        run: flutter build web --release --base-href /flutter-gradle-app-template/ --suppress-analytics
+        run: flutter build web --release --base-href /flutter-app-template/ --suppress-analytics
 
       - name: Publish Website
         uses: peaceiris/actions-gh-pages@v3

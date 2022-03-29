@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gradle_app_template/app.dart';
+import 'package:flutter_app_template/app.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
