@@ -1,7 +1,7 @@
 # Flutter Example Template
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![build](https://github.com/jaredsburrows/flutter-app-template/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/jaredsburrows/flutter-app-template/actions/workflows/build.yml)
+[![Build](https://github.com/jaredsburrows/flutter-app-template/actions/workflows/build.yml/badge.svg)](https://github.com/jaredsburrows/flutter-app-template/actions/workflows/build.yml)
 [![Twitter Follow](https://img.shields.io/twitter/follow/jaredsburrows.svg?style=social)](https://twitter.com/jaredsburrows)
 
 Gradle + Intellij + Flutter
@@ -12,12 +12,14 @@ Gradle + Intellij + Flutter
 
 ```shell
 dart pub upgrade --null-safety
+dart pub get
 ````
 
 **Flutter**
 
 ```shell
 flutter upgrade
+flutter pub get
 flutter pub upgrade --null-safety
 ```
 
