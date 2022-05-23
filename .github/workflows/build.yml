@@ -8,8 +8,10 @@ on:
     types: [ opened, labeled, unlabeled, synchronize ]
 
 env:
+  REPO_NAME: flutter-app-template
   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.configureondemand=true -Dkotlin.incremental=false -Dorg.gradle.jvmargs="-Xmx4g -Xms128m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:MaxMetaspaceSize=1024m"
-
+  FLUTTER_VERSION: 3.0.1
+  JAVA_VERSION: 11
 
 jobs:
   build:
@@ -39,11 +41,11 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper/
             ~/.android/build-cache
-            $FLUTTER_HOME/.pub-cache
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/android/*.gradle*') }}
+            /Users/runner/hostedtoolcache/flutter
+            /Users/runner/.pub-cache
+          key: ${{ runner.os }}-build-${{ env.FLUTTER_VERSION }}
           restore-keys: |
-            ${{ runner.os }}-gradle-
-            ${{ runner.os }}-
+            ${{ runner.os }}-build
 
       - name: Configure JDK
         uses: actions/setup-java@v2.5.0
@@ -52,19 +54,17 @@ jobs:
           java-version: ${{ matrix.java-version }}
       - run: java -version
 
-      - name: Configure Dart
-        uses: dart-lang/setup-dart@v1.3
-        with:
-          sdk: 2.16.1
-
       - name: Configure Flutter
         uses: subosito/flutter-action@v2.3.0
         with:
-          flutter-version: 2.10.2
-          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
       - run: |
           flutter --version
           flutter config --no-analytics
+          
+      - name: Run Analyzer
+        run: flutter analyze --suppress-analytics
 
       - name: Build Android
         run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64 --suppress-analytics
@@ -74,9 +74,6 @@ jobs:
 
       - name: Build Website
         run: flutter build web --release --base-href /flutter-app-template/ --suppress-analytics
-
-      - name: Run Analyzer
-        run: flutter analyze --suppress-analytics
 
       - name: Run Unit Tests
         run: flutter test --coverage --suppress-analytics
@@ -136,16 +133,11 @@ jobs:
           distribution: temurin
           java-version: 11
 
-      - name: Configure Dart
-        uses: dart-lang/setup-dart@v1.3
-        with:
-          sdk: 2.16.1
-
       - name: Configure Flutter
         uses: subosito/flutter-action@v2.3.0
         with:
-          flutter-version: 2.10.2
-          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
 
       - name: Build Website
         run: flutter build web --release --base-href /flutter-app-template/ --suppress-analytics

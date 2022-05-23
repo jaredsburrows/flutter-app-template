@@ -28,12 +28,12 @@ apply plugin: "com.github.ben-manes.versions"
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-  compileSdkVersion 31
+  compileSdkVersion 32
 
   defaultConfig {
     applicationId "com.jaredsburrows.example.flutter.flutter_app_template"
-    minSdkVersion 21
-    targetSdkVersion 31
+    minSdkVersion 25
+    targetSdkVersion 32
     versionCode flutterVersionCode.toInteger()
     versionName flutterVersionName
   }
