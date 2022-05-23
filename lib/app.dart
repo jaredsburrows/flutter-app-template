@@ -5,6 +5,8 @@ import 'home_page.dart';
 import 'settings_page.dart';
 
 class App extends StatelessWidget {
+  const App({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,10 +16,10 @@ class App extends StatelessWidget {
         primarySwatch: Colors.blue,
         brightness: Brightness.dark,
       ),
-      home: HomePage(title: 'Flutter Template'),
+      home: const HomePage(title: 'Flutter Template'),
       routes: <String, WidgetBuilder>{
-        SettingsPage.ROUTE_NAME: (BuildContext context) => SettingsPage(),
-        AccountPage.ROUTE_NAME: (BuildContext context) => AccountPage(),
+        SettingsPage.routeName: (BuildContext context) => const SettingsPage(),
+        AccountPage.routeName: (BuildContext context) => const AccountPage(),
       },
     );
   }

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key, required this.title}) : super(key: key);
+  const HomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
@@ -28,10 +28,10 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('You have pushed the button this many times:'),
+            const Text('You have pushed the button this many times:'),
             Text(
               '$_counter',
-              key: Key('counter'),
+              key: const Key('counter'),
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
@@ -45,14 +45,14 @@ class _HomePageState extends State<HomePage> {
           // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
           children: <Widget>[
-            DrawerHeader(
+            const DrawerHeader(
               // decoration: BoxDecoration(
               //   color: Colors.blue,
               // ),
               child: Text('Drawer Header'),
             ),
             ListTile(
-              title: Text('Item 1'),
+              title: const Text('Item 1'),
               onTap: () {
                 // Update the state of the app
                 // ...
@@ -61,8 +61,8 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
               onTap: () {
                 setState(() {
                   // pop closes the drawer
@@ -76,21 +76,21 @@ class _HomePageState extends State<HomePage> {
                 });
               },
             ),
-            AboutListTile(
-              child: Text('About'),
+            const AboutListTile(
               applicationName: 'Application Name',
               applicationVersion: 'v1.0.0',
               applicationIcon: Icon(Icons.adb),
               icon: Icon(Icons.info),
+              child: Text('About'),
             )
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        key: Key('increment'),
+        key: const Key('increment'),
         onPressed: _incrementCounter,
         tooltip: 'Increment',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 
 /// Basic screen used to show account data
 class AccountPage extends StatelessWidget {
-  static const String ROUTE_NAME = '/account';
+  static const String routeName = '/account';
+
+  const AccountPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Account'),
+        title: const Text('Account'),
       ),
-      body: Container(
-        child: Center(
-          child: Text('Account Screen'),
-        ),
+      body: const Center(
+        child: Text('Account Screen'),
       ),
     );
   }

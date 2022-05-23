@@ -8,13 +8,6 @@ Gradle + Intellij + Flutter
 
 ### Updates
 
-**Dart**
-
-```shell
-dart pub upgrade --null-safety
-dart pub get
-````
-
 **Flutter**
 
 ```shell
