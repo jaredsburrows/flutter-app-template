@@ -62,7 +62,7 @@ jobs:
       - run: |
           flutter --version
           flutter config --no-analytics
-          
+
       - name: Run Analyzer
         run: flutter analyze --suppress-analytics
 
@@ -102,7 +102,7 @@ jobs:
         uses: actions/upload-artifact@v2.3.1
         if: always()
         with:
-          name: android-gif-example-${{ github.workflow }}-${{ github.run_id }}
+          name: ${{ env.REPO_NAME }}-android-${{ github.run_id }}
           path: |
             build/app/outputs/apk/release
             build/app/outputs/bundle/release
