@@ -6,5 +6,5 @@ import 'app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setPathUrlStrategy();
-  runApp(App());
+  runApp(const App());
 }
