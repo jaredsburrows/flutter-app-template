@@ -1915,7 +1915,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 async
 collection
 mime
-shelf_static
 
 Copyright 2015, the Dart project authors. 
 
@@ -1947,7 +1946,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 --------------------------------------------------------------------------------
 boolean_selector
-shelf_packages_handler
 
 Copyright 2016, the Dart project authors. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -4773,8 +4771,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 --------------------------------------------------------------------------------
 charcode
-pool
-shelf_web_socket
 source_maps
 stack_trace
 string_scanner
@@ -5047,6 +5043,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 convert
 crypto
+shelf_static
 vm_service
 
 Copyright 2015, the Dart project authors.
@@ -8558,8 +8555,8 @@ glob
 http_parser
 matcher
 path
+pool
 pub_semver
-shelf
 source_span
 test
 watcher
@@ -10855,6 +10852,8 @@ ON AN "AS IS" BASIS, AND THE COPYRIGHT HOLDER HAS NO OBLIGATION TO
 PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 --------------------------------------------------------------------------------
 http_multi_server
+shelf
+shelf_web_socket
 
 Copyright 2014, the Dart project authors.
 
@@ -13565,6 +13564,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 --------------------------------------------------------------------------------
 meta
+shelf_packages_handler
 
 Copyright 2016, the Dart project authors.
 
