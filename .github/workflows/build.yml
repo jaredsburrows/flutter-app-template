@@ -54,7 +54,7 @@ jobs:
       - run: java -version
 
       - name: Configure Flutter
-        uses: subosito/flutter-action@v2.7.0
+        uses: subosito/flutter-action@v2.7.1
         with:
           channel: stable
           cache: true
@@ -133,7 +133,7 @@ jobs:
           java-version: 11
 
       - name: Configure Flutter
-        uses: subosito/flutter-action@v2.7.0
+        uses: subosito/flutter-action@v2.7.1
         with:
           channel: stable
           cache: true
