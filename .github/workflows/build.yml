@@ -98,7 +98,7 @@ jobs:
           flutter drive --target=test_driver/app.dart --suppress-analytics || true
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v3.1.1
         if: always()
         with:
           name: ${{ env.REPO_NAME }}-android-${{ github.run_id }}
