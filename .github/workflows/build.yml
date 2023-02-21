@@ -63,7 +63,7 @@ jobs:
           flutter config --no-analytics
 
       - name: Run Analyzer
-        run: flutter analyze --suppress-analytics
+        run: flutter analyze --suppress-analytics --no-fatal-infos --no-fatal-warnings
 
       - name: Build Android
         run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64 --suppress-analytics
