@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         java-version:
-          - 11
+          - 19
         api-level:
           - 31
         device:
@@ -126,11 +126,11 @@ jobs:
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1.0.5
 
-      - name: Configure JDK 11
+      - name: Configure JDK ${{ matrix.java-version }}
         uses: actions/setup-java@v3.9.0
         with:
           distribution: temurin
-          java-version: 11
+          java-version: ${{ matrix.java-version }}
 
       - name: Configure Flutter
         uses: subosito/flutter-action@v2.8.0
