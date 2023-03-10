@@ -65,24 +65,43 @@ jobs:
       - name: Run Analyzer
         run: flutter analyze --suppress-analytics --no-fatal-infos --no-fatal-warnings
 
-      - name: Build Android
-        run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64 --suppress-analytics
-
-      - name: Build iOS
-        run: flutter build ios --release --obfuscate --split-debug-info build/ios/outputs/symbols --no-codesign --suppress-analytics
-
-      - name: Build Website
-        run: flutter build web --release --base-href /flutter-app-template/ --suppress-analytics
-
       - name: Run Unit Tests
         run: flutter test --coverage --suppress-analytics
 
-      - name: Start API ${{ matrix.api-level }} Android Emulator and Run Driver Tests
+      - name: Cache AVD
+        uses: actions/cache@v3
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.api-level }}
+
+      - name: Create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2.27.0
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          target: google_apis
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
+
+      - name: Run Debug Instrumentation Tests on Android API ${{ matrix.api-level }}
         uses: reactivecircus/android-emulator-runner@v2.27.0
         continue-on-error: true
         with:
           api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          target: google_apis
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
+          disable-animations: true
           script: flutter drive --target=test_driver/app.dart --suppress-analytics || true
+        env:
+          API_LEVEL: ${{ matrix.api-level }}
 
       - name: Start API ${{ matrix.device }} iOS Simulator API and Run Driver Tests
         run: |
@@ -96,6 +115,15 @@ jobs:
           echo $UDID
           xcrun simctl boot "${UDID:?No Simulator with this name found}"
           flutter drive --target=test_driver/app.dart --suppress-analytics || true
+
+      - name: Build Android
+        run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64 --suppress-analytics
+
+      - name: Build iOS
+        run: flutter build ios --release --obfuscate --split-debug-info build/ios/outputs/symbols --no-codesign --suppress-analytics
+
+      - name: Build Website
+        run: flutter build web --release --base-href /flutter-app-template/ --suppress-analytics
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3.1.2
@@ -130,7 +158,7 @@ jobs:
         uses: actions/setup-java@v3.9.0
         with:
           distribution: temurin
-          java-version: ${{ matrix.java-version }}
+          java-version: 19
 
       - name: Configure Flutter
         uses: subosito/flutter-action@v2.8.0
