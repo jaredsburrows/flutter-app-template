@@ -22,7 +22,7 @@ jobs:
         java-version:
           - 19
         api-level:
-          - 31
+          - 33
         device:
           - "iPhone 13 Pro Max"
 
