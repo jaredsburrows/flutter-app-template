@@ -24,7 +24,7 @@ jobs:
         api-level:
           - 33
         device:
-          - "iPhone 13 Pro Max"
+          - "iPhone 14 Pro Max"
 
     steps:
       - name: Checkout Project
@@ -40,6 +40,7 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper/
             ~/.android/build-cache
+            /opt/hostedtoolcache/flutter
             /Users/runner/hostedtoolcache/flutter
             /Users/runner/.pub-cache
           key: ${{ runner.os }}-build
@@ -51,7 +52,11 @@ jobs:
         with:
           distribution: temurin
           java-version: ${{ matrix.java-version }}
+          cache: gradle
       - run: java -version
+
+      - name: Run Build
+        uses: gradle/gradle-build-action@v2
 
       - name: Configure Flutter
         uses: subosito/flutter-action@v2.8.0
@@ -143,7 +148,7 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
     needs:
       - build
 
@@ -159,6 +164,10 @@ jobs:
         with:
           distribution: temurin
           java-version: 19
+          cache: gradle
+
+      - name: Run Build
+        uses: gradle/gradle-build-action@v2
 
       - name: Configure Flutter
         uses: subosito/flutter-action@v2.8.0
