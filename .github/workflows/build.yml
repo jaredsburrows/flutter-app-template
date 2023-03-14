@@ -132,7 +132,7 @@ jobs:
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3.1.2
-        if: always()
+        if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
         with:
           name: ${{ env.REPO_NAME }}-android-${{ github.run_id }}
           path: |
@@ -144,7 +144,6 @@ jobs:
             build/ios/Release-iphoneos
             build/ios/symbols
             build/web
-          if-no-files-found: warn
 
   publish:
     runs-on: ubuntu-latest
