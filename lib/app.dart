@@ -13,9 +13,14 @@ class App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Template',
       theme: ThemeData(
+        brightness: Brightness.light,
         primarySwatch: Colors.blue,
-        brightness: Brightness.dark,
       ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.blue,
+      ),
+      themeMode: ThemeMode.system,
       home: const HomePage(title: 'Flutter Template'),
       routes: <String, WidgetBuilder>{
         SettingsPage.routeName: (BuildContext context) => const SettingsPage(),
