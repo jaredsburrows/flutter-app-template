@@ -22,9 +22,9 @@ jobs:
         java-version:
           - 19
         api-level:
-          - 31
+          - 33
         device:
-          - "iPhone 13 Pro Max"
+          - "iPhone 14 Pro Max"
 
     steps:
       - name: Checkout Project
@@ -38,8 +38,10 @@ jobs:
         with:
           path: |
             ~/.gradle/caches
-            ~/.gradle/wrapper/
+            ~/.gradle/wrapper
             ~/.android/build-cache
+            ios/Pods
+            /opt/hostedtoolcache/flutter
             /Users/runner/hostedtoolcache/flutter
             /Users/runner/.pub-cache
           key: ${{ runner.os }}-build
@@ -51,16 +53,17 @@ jobs:
         with:
           distribution: temurin
           java-version: ${{ matrix.java-version }}
-      - run: java -version
+          cache: gradle
+
+      - name: Run Build
+        uses: gradle/gradle-build-action@v2
 
       - name: Configure Flutter
         uses: subosito/flutter-action@v2.8.0
         with:
           channel: stable
           cache: true
-      - run: |
-          flutter --version
-          flutter config --no-analytics
+      - run: flutter config --no-analytics
 
       - name: Run Analyzer
         run: flutter analyze --suppress-analytics --no-fatal-infos --no-fatal-warnings
@@ -91,7 +94,6 @@ jobs:
 
       - name: Run Debug Instrumentation Tests on Android API ${{ matrix.api-level }}
         uses: reactivecircus/android-emulator-runner@v2.27.0
-        continue-on-error: true
         with:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
@@ -99,9 +101,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
           disable-animations: true
-          script: flutter drive --target=test_driver/app.dart --suppress-analytics || true
-        env:
-          API_LEVEL: ${{ matrix.api-level }}
+          script: flutter drive --target=test_driver/app.dart --suppress-analytics || flutter drive --target=test_driver/app.dart --suppress-analytics
 
       - name: Start API ${{ matrix.device }} iOS Simulator API and Run Driver Tests
         run: |
@@ -114,20 +114,14 @@ jobs:
           )
           echo $UDID
           xcrun simctl boot "${UDID:?No Simulator with this name found}"
-          flutter drive --target=test_driver/app.dart --suppress-analytics || true
+          flutter drive --target=test_driver/app.dart --suppress-analytics || flutter drive --target=test_driver/app.dart --suppress-analytics
 
       - name: Build Android
         run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64 --suppress-analytics
 
-      - name: Build iOS
-        run: flutter build ios --release --obfuscate --split-debug-info build/ios/outputs/symbols --no-codesign --suppress-analytics
-
-      - name: Build Website
-        run: flutter build web --release --base-href /flutter-app-template/ --suppress-analytics
-
-      - name: Upload Artifacts
+      - name: Upload Android Artifacts
         uses: actions/upload-artifact@v3.1.2
-        if: always()
+        if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
         with:
           name: ${{ env.REPO_NAME }}-android-${{ github.run_id }}
           path: |
@@ -136,38 +130,30 @@ jobs:
             build/app/outputs/symbols-apk
             build/app/outputs/symbols-appbundle
             build/app/reports
+
+      - name: Build iOS
+        run: flutter build ios --release --obfuscate --split-debug-info build/ios/outputs/symbols --no-codesign --suppress-analytics
+
+      - name: Upload iOS Artifacts
+        uses: actions/upload-artifact@v3.1.2
+        if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
+        with:
+          name: ${{ env.REPO_NAME }}-ios-${{ github.run_id }}
+          path: |
             build/ios/Release-iphoneos
             build/ios/symbols
             build/web
-          if-no-files-found: warn
-
-  publish:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
-    needs:
-      - build
-
-    steps:
-      - name: Checkout Project
-        uses: actions/checkout@v3.3.0
-
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1.0.6
-
-      - name: Configure JDK ${{ matrix.java-version }}
-        uses: actions/setup-java@v3.10.0
-        with:
-          distribution: temurin
-          java-version: 19
-
-      - name: Configure Flutter
-        uses: subosito/flutter-action@v2.8.0
-        with:
-          channel: stable
-          cache: true
 
       - name: Build Website
         run: flutter build web --release --base-href /flutter-app-template/ --suppress-analytics
+
+      - name: Upload Web Artifacts
+        uses: actions/upload-artifact@v3.1.2
+        if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
+        with:
+          name: ${{ env.REPO_NAME }}-web-${{ github.run_id }}
+          path: |
+            build/web
 
       - name: Publish Website
         uses: peaceiris/actions-gh-pages@v3
