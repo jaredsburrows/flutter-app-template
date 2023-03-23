@@ -16,9 +16,9 @@ dependencies:
   url_strategy: ^0.2.0
 
 dev_dependencies:
-  flutter_test:
+  integration_test:
     sdk: flutter
-  flutter_driver:
+  flutter_test:
     sdk: flutter
   test: ^1.22.0
   lints: ^2.0.1
