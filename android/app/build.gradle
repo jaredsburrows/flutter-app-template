@@ -24,7 +24,6 @@ if (flutterVersionName == null) {
 
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
-apply plugin: "com.github.ben-manes.versions"
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
@@ -39,7 +38,6 @@ android {
   }
 
   compileOptions {
-    coreLibraryDesugaringEnabled = true
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
   }
@@ -54,7 +52,6 @@ android {
 
   buildTypes {
     release {
-      // Signing with the debug keys for now, so `flutter run --release` works.
       signingConfig signingConfigs.debug
     }
   }
@@ -70,9 +67,5 @@ flutter {
 }
 
 dependencies {
-  coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.1.5"
-
-  implementation "org.jetbrains.kotlin:kotlin-bom:$kotlin_version"
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-  implementation "com.google.android.material:material:1.6.0"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
