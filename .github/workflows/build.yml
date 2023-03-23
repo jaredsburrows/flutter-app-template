@@ -92,7 +92,7 @@ jobs:
           disable-animations: false
           script: echo "Generated AVD snapshot for caching."
 
-      - name: Run Debug Instrumentation Tests on Android API ${{ matrix.api-level }}
+      - name: Run Instrumentation Tests on Android ${{ matrix.api-level }} Emulator
         uses: reactivecircus/android-emulator-runner@v2.27.0
         with:
           api-level: ${{ matrix.api-level }}
@@ -101,9 +101,9 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
           disable-animations: true
-          script: flutter drive --target=test_driver/app.dart --suppress-analytics || flutter drive --target=test_driver/app.dart --suppress-analytics
+          script: flutter test integration_test --suppress-analytics
 
-      - name: Start API ${{ matrix.device }} iOS Simulator API and Run Driver Tests
+      - name: Run Instrumentation Tests on ${{ matrix.device }} Simulator
         run: |
           echo "Listing Devices"
           xcrun xctrace list devices
@@ -114,7 +114,7 @@ jobs:
           )
           echo $UDID
           xcrun simctl boot "${UDID:?No Simulator with this name found}"
-          flutter drive --target=test_driver/app.dart --suppress-analytics || flutter drive --target=test_driver/app.dart --suppress-analytics
+          flutter test integration_test --suppress-analytics
 
       - name: Build Android
         run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64 --suppress-analytics
