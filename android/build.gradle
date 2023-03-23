@@ -3,13 +3,11 @@ buildscript {
   repositories {
     google()
     mavenCentral()
-    gradlePluginPortal()
   }
 
   dependencies {
-    classpath "com.android.tools.build:gradle:7.4.2"
+    classpath 'com.android.tools.build:gradle:7.4.2'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    classpath "com.github.ben-manes:gradle-versions-plugin:0.42.0"
   }
 }
 
@@ -17,14 +15,30 @@ allprojects {
   repositories {
     google()
     mavenCentral()
-    gradlePluginPortal()
+  }
+
+  configurations.all {
+    resolutionStrategy {
+      preferProjectModules()
+
+      enableDependencyVerification()
+
+      // Fix manifest merger error
+      eachDependency { details ->
+        if (details.requested.group == 'androidx.test.espresso') {
+          details.useVersion '3.4.0'
+        }
+      }
+    }
   }
 }
 
-rootProject.buildDir = "../build"
+rootProject.buildDir = '../build'
 subprojects {
   project.buildDir = "${rootProject.buildDir}/${project.name}"
-  project.evaluationDependsOn(":app")
+}
+subprojects {
+  project.evaluationDependsOn(':app')
 }
 
 task clean(type: Delete) {
