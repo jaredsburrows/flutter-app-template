@@ -56,7 +56,7 @@ jobs:
           cache: gradle
 
       - name: Run Build
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v2.4.0
 
       - name: Configure Flutter
         uses: subosito/flutter-action@v2.10.0
@@ -70,9 +70,15 @@ jobs:
 
       - name: Run Unit Tests
         run: flutter test --coverage --suppress-analytics
+        
+      - name: Publish Test Report
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2.6.1
+        if: success() || failure()
+        with:
+          files: '**/build/test-results/test/TEST-*.xml'  
 
       - name: Cache AVD
-        uses: actions/cache@v3
+        uses: actions/checkout@v3.5.0
         id: avd-cache
         with:
           path: |
@@ -156,7 +162,7 @@ jobs:
             build/web
 
       - name: Publish Website
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v3.9.2
         if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
