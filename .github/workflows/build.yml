@@ -66,16 +66,16 @@ jobs:
       - run: flutter config --no-analytics
 
       - name: Run Analyzer
-        run: flutter analyze --suppress-analytics --no-fatal-infos --no-fatal-warnings
+        run: flutter analyze --suppress-analytics
 
       - name: Run Unit Tests
-        run: flutter test --coverage --suppress-analytics
+        run: flutter test --coverage --suppress-analytics -r json > build/test-results.json 
         
       - name: Publish Test Report
         uses: EnricoMi/publish-unit-test-result-action/composite@v2.6.1
         if: success() || failure()
         with:
-          files: '**/build/test-results/test/TEST-*.xml'  
+          files: '**/build/test-results.json'  
 
       - name: Cache AVD
         uses: actions/checkout@v3.5.0
