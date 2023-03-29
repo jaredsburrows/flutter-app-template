@@ -17,7 +17,6 @@ jobs:
     runs-on: macos-latest
 
     strategy:
-      fail-fast: false
       matrix:
         java-version:
           - 19
@@ -69,13 +68,13 @@ jobs:
         run: flutter analyze --suppress-analytics
 
       - name: Run Unit Tests
-        run: flutter test --coverage --suppress-analytics -r json > build/test-results.json 
+        run: flutter test --coverage --suppress-analytics -r json > test-results.json 
         
       - name: Publish Test Report
         uses: EnricoMi/publish-unit-test-result-action/composite@v2.6.1
         if: success() || failure()
         with:
-          files: '**/build/test-results.json'  
+          files: '**/test-results.json'  
 
       - name: Cache AVD
         uses: actions/checkout@v3.5.0
