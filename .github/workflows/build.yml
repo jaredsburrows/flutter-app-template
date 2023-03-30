@@ -142,7 +142,6 @@ jobs:
           path: |
             build/ios/Release-iphoneos
             build/ios/symbols
-            build/web
 
       - name: Build Website
         run: flutter build web --release --base-href /flutter-app-template/
