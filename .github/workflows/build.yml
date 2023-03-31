@@ -120,11 +120,22 @@ jobs:
         uses: nanasess/setup-chromedriver@v2.0.0
       - run: |
           export DISPLAY=:99
-          chromedriver --port=4444 --url-base=/wd/hub &
-          sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
+          sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+          chromedriver --port=4444 &
 
-      - name: Run Instrumentation Tests for Web
-        run: flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart -d web-server
+      - name: Run Flutter integration tests
+        working-directory: ./packages/audioplayers/example
+        run: |
+          flutter drive \
+           --driver=test_driver/integration_test.dart \
+           --target=integration_test/app_test.dart \
+           -d web-server \
+           --web-browser-flag="--autoplay-policy=no-user-gesture-required" \
+           --web-browser-flag="--disable-web-security" \
+           --dart-define USE_LOCAL_SERVER=true
+
+ #     - name: Run Instrumentation Tests for Web
+ #       run: flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart -d web-server
 
       - name: Build Android
         run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64
