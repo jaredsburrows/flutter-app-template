@@ -117,14 +117,14 @@ jobs:
           flutter test integration_test
 
       - name: Setup chromedriver
-        uses: nanasess/setup-chromedriver@v1
+        uses: nanasess/setup-chromedriver@v2.0.0
       - run: |
           export DISPLAY=:99
           chromedriver --port=4444 --url-base=/wd/hub &
           sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
 
       - name: Run Instrumentation Tests for Web
-        run: flutter -v drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart -d chrome
+        run: flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart -d web-server
 
       - name: Build Android
         run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64
