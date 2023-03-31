@@ -8,33 +8,28 @@ on:
     types: [ opened, labeled, unlabeled, synchronize ]
 
 env:
-  REPO_NAME: flutter-app-template
   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.configureondemand=true -Dkotlin.incremental=false -Dorg.gradle.jvmargs="-Xmx4g -Xms128m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:MaxMetaspaceSize=1024m"
+  JAVA_VERSION: 19
+  ANDROID_API_LEVEL: 33
+  IPHONE_DEVICE: "iPhone 14 Pro Max"
 
 jobs:
   build:
-    name: Android API ${{ matrix.api-level }} / iOS API ${{ matrix.device }} / JDK ${{ matrix.java-version }}
+    name: Build
     runs-on: macos-latest
 
     strategy:
       fail-fast: false
-      matrix:
-        java-version:
-          - 19
-        api-level:
-          - 33
-        device:
-          - "iPhone 14 Pro Max"
 
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v3.4.0
+        uses: actions/checkout@v3.5.0
 
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1.0.6
 
       - name: Cache Gradle Dependencies
-        uses: actions/cache@v3.3.0
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ~/.gradle/caches
@@ -48,31 +43,36 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build
 
-      - name: Configure JDK ${{ matrix.java-version }}
-        uses: actions/setup-java@v3.10.0
+      - name: Configure JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v3.11.0
         with:
           distribution: temurin
-          java-version: ${{ matrix.java-version }}
+          java-version: ${{ env.JAVA_VERSION }}
           cache: gradle
 
       - name: Run Build
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v2.4.0
 
       - name: Configure Flutter
         uses: subosito/flutter-action@v2.10.0
         with:
           channel: stable
           cache: true
-      - run: flutter config --no-analytics
 
       - name: Run Analyzer
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings --suppress-analytics
+        run: flutter analyze
 
       - name: Run Unit Tests
-        run: flutter test --coverage --suppress-analytics
+        run: flutter test --coverage -r json > test-results.json 
+        
+      - name: Publish Test Report
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2.6.1
+        if: success() || failure()
+        with:
+          files: '**/test-results.json'  
 
       - name: Cache AVD
-        uses: actions/cache@v3
+        uses: actions/checkout@v3.5.0
         id: avd-cache
         with:
           path: |
@@ -84,7 +84,7 @@ jobs:
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2.28.0
         with:
-          api-level: ${{ matrix.api-level }}
+          api-level: ${{ env.ANDROID_API_LEVEL }}
           arch: x86_64
           target: google_apis
           force-avd-creation: false
@@ -92,29 +92,29 @@ jobs:
           disable-animations: false
           script: echo "Generated AVD snapshot for caching."
 
-      - name: Run Instrumentation Tests on Android ${{ matrix.api-level }} Emulator
+      - name: Run Instrumentation Tests on Android API ${{ env.ANDROID_API_LEVEL }}
         uses: reactivecircus/android-emulator-runner@v2.28.0
         with:
-          api-level: ${{ matrix.api-level }}
+          api-level: ${{ env.ANDROID_API_LEVEL }}
           arch: x86_64
           target: google_apis
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
           disable-animations: true
-          script: flutter test integration_test --suppress-analytics
+          script: flutter test integration_test
 
-      - name: Run Instrumentation Tests on ${{ matrix.device }} Simulator
+      - name: Run Instrumentation Tests on ${{ env.IPHONE_DEVICE }} Simulator
         run: |
           echo "Listing Devices"
           xcrun xctrace list devices
           UDID=$(
             xcrun xctrace list devices 2>&1 |
-            grep -m 1 "${{ matrix.device }}" |
+            grep -m 1 "${{ env.IPHONE_DEVICE }}" |
             awk -F'[()]' '{ print $4 }'
           )
           echo $UDID
           xcrun simctl boot "${UDID:?No Simulator with this name found}"
-          flutter test integration_test --suppress-analytics
+          flutter test integration_test
 
       - name: Setup chromedriver
         uses: nanasess/setup-chromedriver@v1
@@ -124,10 +124,10 @@ jobs:
           sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
 
       - name: Run Instrumentation Tests for Web
-        run: flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart -d chrome --suppress-analytics
+        run: flutter -v drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart -d chrome
 
       - name: Build Android
-        run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64 --suppress-analytics
+        run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64
 
       - name: Upload Android Artifacts
         uses: actions/upload-artifact@v3.1.2
@@ -142,7 +142,7 @@ jobs:
             build/app/reports
 
       - name: Build iOS
-        run: flutter build ios --release --obfuscate --split-debug-info build/ios/outputs/symbols --no-codesign --suppress-analytics
+        run: flutter build ios --release --obfuscate --split-debug-info build/ios/outputs/symbols --no-codesign
 
       - name: Upload iOS Artifacts
         uses: actions/upload-artifact@v3.1.2
@@ -154,7 +154,7 @@ jobs:
             build/ios/symbols
 
       - name: Build Website
-        run: flutter build web --release --base-href /flutter-app-template/ --suppress-analytics
+        run: flutter build web --release --base-href /flutter-app-template/
 
       - name: Upload Web Artifacts
         uses: actions/upload-artifact@v3.1.2
@@ -165,7 +165,7 @@ jobs:
             build/web
 
       - name: Publish Website
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v3.9.3
         if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
