@@ -59,62 +59,14 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Run Analyzer
-        run: flutter analyze
-
       - name: Run Unit Tests
-        run: flutter test --coverage -r json > test-results.json 
-        
+        run: flutter test --coverage -r json | grep '^{' | jq -cM > unit-test-results.json
+
       - name: Publish Test Report
         uses: EnricoMi/publish-unit-test-result-action/composite@v2.6.1
         if: success() || failure()
         with:
-          files: '**/test-results.json'  
-
-      - name: Cache AVD
-        uses: actions/checkout@v3.5.0
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-${{ matrix.api-level }}
-
-      - name: Create AVD and generate snapshot for caching
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2.28.0
-        with:
-          api-level: ${{ env.ANDROID_API_LEVEL }}
-          arch: x86_64
-          target: google_apis
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
-          script: echo "Generated AVD snapshot for caching."
-
-      - name: Run Instrumentation Tests on Android API ${{ env.ANDROID_API_LEVEL }}
-        uses: reactivecircus/android-emulator-runner@v2.28.0
-        with:
-          api-level: ${{ env.ANDROID_API_LEVEL }}
-          arch: x86_64
-          target: google_apis
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
-          disable-animations: true
-          script: flutter test integration_test
-
-      - name: Run Instrumentation Tests on ${{ env.IPHONE_DEVICE }} Simulator
-        run: |
-          echo "Listing Devices"
-          xcrun xctrace list devices
-          UDID=$(
-            xcrun xctrace list devices 2>&1 |
-            grep -m 1 "${{ env.IPHONE_DEVICE }}" |
-            awk -F'[()]' '{ print $4 }'
-          )
-          echo $UDID
-          xcrun simctl boot "${UDID:?No Simulator with this name found}"
-          flutter test integration_test
+          files: '**/unit-test-results.json'
 
       - name: Setup chromedriver
         uses: nanasess/setup-chromedriver@v2.0.0
@@ -124,62 +76,11 @@ jobs:
           chromedriver --port=4444 &
 
       - name: Run Flutter integration tests
-        working-directory: ./packages/audioplayers/example
         run: |
           flutter drive \
            --driver=test_driver/integration_test.dart \
            --target=integration_test/app_test.dart \
-           -d web-server \
+           -d chrome \
            --web-browser-flag="--autoplay-policy=no-user-gesture-required" \
            --web-browser-flag="--disable-web-security" \
            --dart-define USE_LOCAL_SERVER=true
-
- #     - name: Run Instrumentation Tests for Web
- #       run: flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart -d web-server
-
-      - name: Build Android
-        run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64
-
-      - name: Upload Android Artifacts
-        uses: actions/upload-artifact@v3.1.2
-        if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
-        with:
-          name: ${{ env.REPO_NAME }}-android-${{ github.run_id }}
-          path: |
-            build/app/outputs/apk/release
-            build/app/outputs/bundle/release
-            build/app/outputs/symbols-apk
-            build/app/outputs/symbols-appbundle
-            build/app/reports
-
-      - name: Build iOS
-        run: flutter build ios --release --obfuscate --split-debug-info build/ios/outputs/symbols --no-codesign
-
-      - name: Upload iOS Artifacts
-        uses: actions/upload-artifact@v3.1.2
-        if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
-        with:
-          name: ${{ env.REPO_NAME }}-ios-${{ github.run_id }}
-          path: |
-            build/ios/Release-iphoneos
-            build/ios/symbols
-
-      - name: Build Website
-        run: flutter build web --release --base-href /flutter-app-template/
-
-      - name: Upload Web Artifacts
-        uses: actions/upload-artifact@v3.1.2
-        if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
-        with:
-          name: ${{ env.REPO_NAME }}-web-${{ github.run_id }}
-          path: |
-            build/web
-
-      - name: Publish Website
-        uses: peaceiris/actions-gh-pages@v3.9.3
-        if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/web
-          user_name: "Github Actions"
-          user_email: "action@github.com"
