@@ -63,13 +63,15 @@ jobs:
         run: flutter analyze
 
       - name: Run Unit Tests
-        run: flutter test --coverage -r json > test-results.json 
-        
-      - name: Publish Test Report
+        run: flutter test --coverage -r json | grep '^{' | jq -cM > unit-test-results.json
+
+      - name: Publish Unit Test Report
         uses: EnricoMi/publish-unit-test-result-action/composite@v2.6.1
         if: always()
         with:
-          files: '**/test-results.json'  
+          check_name: "Unit Test Results"
+          files: |
+            unit-test-results.json
 
       - name: Cache AVD
         uses: actions/checkout@v3.5.0
@@ -112,7 +114,15 @@ jobs:
           )
           echo $UDID
           xcrun simctl boot "${UDID:?No Simulator with this name found}"
-          flutter test integration_test
+          flutter test integration_test -r json | grep '^{' | jq -cM > integration-test-results.json
+
+      - name: Publish Integration Test Report
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2.6.1
+        if: always()
+        with:
+          check_name: "Integration Test Results"
+          files: |
+            integration-test-results.json
 
       - name: Build Android
         run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64
