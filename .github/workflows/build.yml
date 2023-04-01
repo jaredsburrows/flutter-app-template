@@ -67,7 +67,7 @@ jobs:
         
       - name: Publish Test Report
         uses: EnricoMi/publish-unit-test-result-action/composite@v2.6.1
-        if: success() || failure()
+        if: always()
         with:
           files: '**/test-results.json'  
 
@@ -105,8 +105,6 @@ jobs:
 
       - name: Run Instrumentation Tests on ${{ env.IPHONE_DEVICE }} Simulator
         run: |
-          echo "Listing Devices"
-          xcrun xctrace list devices
           UDID=$(
             xcrun xctrace list devices 2>&1 |
             grep -m 1 "${{ env.IPHONE_DEVICE }}" |
