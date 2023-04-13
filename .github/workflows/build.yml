@@ -22,6 +22,10 @@ jobs:
     name: Build
     runs-on: macos-latest
 
+    permissions:
+      checks: write
+      pull-requests: write
+
     strategy:
       fail-fast: false
 
