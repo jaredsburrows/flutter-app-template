@@ -23,8 +23,9 @@ jobs:
     runs-on: macos-latest
 
     permissions:
-      checks: write
-      pull-requests: write
+      checks: write # For EnricoMi/publish-unit-test-result-action
+      pull-requests: write # For EnricoMi/publish-unit-test-result-action
+      contents: write # For peaceiris/actions-gh-pages
 
     strategy:
       fail-fast: false
