@@ -6,15 +6,18 @@
 
 Gradle + Intellij + Flutter
 
-## Setup Flutter
+## Setup
 
-**Setup Flutter**
+**Flutter**
 
 ```shell
+rm pubspec.lock
+rm ios/Podfile.lock
 flutter upgrade
 flutter pub get
 flutter pub upgrade --null-safety
 ```
+
 **Build All**
 
 ```shell
