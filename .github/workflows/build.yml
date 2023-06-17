@@ -79,7 +79,7 @@ jobs:
         if: always()
         with:
           check_name: "Unit Test Results"
-          comment_mode: false
+          comment_mode: off
           files: |
             build/reports/unit-test-results.json
 
@@ -131,7 +131,7 @@ jobs:
         if: always()
         with:
           check_name: "Integration Test Results"
-          comment_mode: false
+          comment_mode: off
           files: |
             build/reports/integration-test-results.json
 
