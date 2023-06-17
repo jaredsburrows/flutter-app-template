@@ -11,11 +11,11 @@ Gradle + Intellij + Flutter
 **Flutter**
 
 ```shell
-rm pubspec.lock
-rm ios/Podfile.lock
+rm -f ios/Podfile.lock
+rm -f pubspec.lock
 flutter upgrade
 flutter pub get
-flutter pub upgrade --null-safety
+flutter pub upgrade
 ```
 
 **Build All**
