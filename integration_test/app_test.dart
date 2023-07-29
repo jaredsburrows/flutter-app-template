@@ -6,6 +6,9 @@ import 'package:integration_test/integration_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
+  // https://github.com/flutter/flutter/issues/116936
+  app.isTesting = true;
+
   group('Flutter Example', () {
     // First, define the Finders and use them to locate widgets from the
     // test suite. Note: the Keys provided to the `byKey` method must
