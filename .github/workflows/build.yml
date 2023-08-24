@@ -32,7 +32,7 @@ jobs:
 
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v3.6.0
 
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1.1.0
@@ -84,7 +84,7 @@ jobs:
             build/reports/unit-test-results.json
 
       - name: Cache AVD
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v3.6.0
         id: avd-cache
         with:
           path: |
