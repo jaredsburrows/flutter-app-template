@@ -22,7 +22,7 @@ dev_dependencies:
     sdk: flutter
   test: ^1.22.0
   lints: ^2.0.1
-  flutter_lints: ^2.0.1
+  flutter_lints: ^2.0.3
 
 flutter:
 
