@@ -32,7 +32,7 @@ jobs:
 
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.0
 
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1.1.0
@@ -60,7 +60,7 @@ jobs:
           cache: gradle
 
       - name: Run Build
-        uses: gradle/gradle-build-action@v2.7.1
+        uses: gradle/gradle-build-action@v2.9.0
 
       - name: Configure Flutter
         uses: subosito/flutter-action@v2.10.0
@@ -84,7 +84,7 @@ jobs:
             build/reports/unit-test-results.json
 
       - name: Cache AVD
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.0
         id: avd-cache
         with:
           path: |
@@ -127,7 +127,7 @@ jobs:
           flutter test integration_test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/integration-test-results.json
 
       - name: Setup chromedriver
-        uses: nanasess/setup-chromedriver@v2.1.2
+        uses: nanasess/setup-chromedriver@v2.2.0
       - run: |
           export DISPLAY=:99
           sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
