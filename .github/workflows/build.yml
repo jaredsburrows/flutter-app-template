@@ -155,7 +155,7 @@ jobs:
         run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64
 
       - name: Upload Android Artifacts
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.0.0
         if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
         with:
           name: ${{ env.REPO_NAME }}-android-${{ github.run_id }}
@@ -170,7 +170,7 @@ jobs:
         run: flutter build ios --release --obfuscate --split-debug-info build/ios/outputs/symbols --no-codesign
 
       - name: Upload iOS Artifacts
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.0.0
         if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
         with:
           name: ${{ env.REPO_NAME }}-ios-${{ github.run_id }}
@@ -182,7 +182,7 @@ jobs:
         run: flutter build web --release --base-href /flutter-app-template/
 
       - name: Upload Web Artifacts
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.0.0
         if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
         with:
           name: ${{ env.REPO_NAME }}-web-${{ github.run_id }}
