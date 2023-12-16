@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class AccountPage extends StatelessWidget {
   static const String routeName = '/account';
 
-  const AccountPage({Key? key}) : super(key: key);
+  const AccountPage({super.key});
 
   @override
   Widget build(BuildContext context) {
