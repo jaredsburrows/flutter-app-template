@@ -60,7 +60,7 @@ jobs:
           cache: gradle
 
       - name: Run Build
-        uses: gradle/gradle-build-action@v2.11.0
+        uses: gradle/gradle-build-action@v2.11.1
 
       - name: Configure Flutter
         uses: subosito/flutter-action@v2.12.0
