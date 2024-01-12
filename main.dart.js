@@ -22290,7 +22290,7 @@ $1(a){var s=$.bw
 s=(s==null?$.bw=A.dT(self.window.flutterConfiguration):s).b
 if(s==null)s=null
 else{s=s.canvasKitBaseUrl
-if(s==null)s=null}return(s==null?"https://www.gstatic.com/flutter-canvaskit/54a7145303f0dd9d0f93424a2e124eb4abef5091/":s)+a},
+if(s==null)s=null}return(s==null?"https://www.gstatic.com/flutter-canvaskit/4a585b79294e830fa89c24924d58a27cc8fbf406/":s)+a},
 $S:137}
 A.a8s.prototype={
 $1(a){this.a.remove()
