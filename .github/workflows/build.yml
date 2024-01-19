@@ -7,10 +7,6 @@ on:
   pull_request:
     types: [ opened, labeled, unlabeled, synchronize ]
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 env:
   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.configureondemand=true -Dkotlin.incremental=false -Dorg.gradle.jvmargs="-Xmx4g -Xms128m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:MaxMetaspaceSize=1024m"
   JAVA_VERSION: 17
@@ -26,9 +22,6 @@ jobs:
       checks: write # For EnricoMi/publish-unit-test-result-action
       pull-requests: write # For EnricoMi/publish-unit-test-result-action
       contents: write # For peaceiris/actions-gh-pages
-
-    strategy:
-      fail-fast: false
 
     steps:
       - name: Checkout Project
