@@ -87,7 +87,7 @@ jobs:
 
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2.29.0
+        uses: reactivecircus/android-emulator-runner@v2.30.0
         with:
           api-level: ${{ env.ANDROID_API_LEVEL }}
           arch: x86_64
@@ -98,7 +98,7 @@ jobs:
           script: echo "Generated AVD snapshot for caching."
 
       - name: Run Instrumentation Tests on Android API ${{ env.ANDROID_API_LEVEL }}
-        uses: reactivecircus/android-emulator-runner@v2.29.0
+        uses: reactivecircus/android-emulator-runner@v2.30.0
         with:
           api-level: ${{ env.ANDROID_API_LEVEL }}
           arch: x86_64
