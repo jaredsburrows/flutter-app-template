@@ -68,7 +68,7 @@ jobs:
         run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/unit-test-results.json
 
       - name: Publish Unit Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.12.0
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2.14.0
         if: always()
         with:
           check_name: "Unit Test Results"
@@ -136,7 +136,7 @@ jobs:
            --web-browser-flag="--disable-web-security"
 
       - name: Publish Integration Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.12.0
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2.14.0
         if: always()
         with:
           check_name: "Integration Test Results"
