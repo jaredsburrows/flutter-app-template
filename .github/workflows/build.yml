@@ -10,13 +10,13 @@ on:
 env:
   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.configureondemand=true -Dkotlin.incremental=false -Dorg.gradle.jvmargs="-Xmx4g -Xms128m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:MaxMetaspaceSize=1024m"
   JAVA_VERSION: 17
-  ANDROID_API_LEVEL: 33
+  ANDROID_API_LEVEL: 34
   IPHONE_DEVICE: "iPhone 14 Pro Max"
 
 jobs:
   build:
     name: Build
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     permissions:
       checks: write # For EnricoMi/publish-unit-test-result-action
@@ -27,33 +27,16 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v4.1.1
 
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v2.0.1
-
-      - name: Cache Gradle Dependencies
+      - name: Cache Dependencies
         uses: actions/cache@v4.0.0
         with:
           path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ~/.android/build-cache
-            ios/Pods
             /opt/hostedtoolcache/flutter
             /Users/runner/hostedtoolcache/flutter
             /Users/runner/.pub-cache
           key: ${{ runner.os }}-build
           restore-keys: |
             ${{ runner.os }}-build
-
-      - name: Configure JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4.0.0
-        with:
-          distribution: temurin
-          java-version: ${{ env.JAVA_VERSION }}
-          cache: gradle
-
-      - name: Run Build
-        uses: gradle/gradle-build-action@v3.0.0
 
       - name: Configure Flutter
         uses: subosito/flutter-action@v2.12.0
@@ -75,38 +58,6 @@ jobs:
           comment_mode: off
           files: |
             build/reports/unit-test-results.json
-
-      - name: Cache AVD
-        uses: actions/checkout@v4.1.1
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-${{ env.ANDROID_API_LEVEL }}
-
-      - name: Create AVD and generate snapshot for caching
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2.30.1
-        with:
-          api-level: ${{ env.ANDROID_API_LEVEL }}
-          arch: x86_64
-          target: google_apis
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
-          script: echo "Generated AVD snapshot for caching."
-
-      - name: Run Instrumentation Tests on Android API ${{ env.ANDROID_API_LEVEL }}
-        uses: reactivecircus/android-emulator-runner@v2.30.1
-        with:
-          api-level: ${{ env.ANDROID_API_LEVEL }}
-          arch: x86_64
-          target: google_apis
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
-          disable-animations: true
-          script: flutter test integration_test
 
       - name: Run Instrumentation Tests on ${{ env.IPHONE_DEVICE }} Simulator
         run: |
@@ -144,6 +95,113 @@ jobs:
           files: |
             build/reports/integration-test-results.json
 
+  android:
+    name: Android
+    runs-on: ubuntu-latest
+    needs:
+      - build
+
+    permissions:
+      checks: write # For EnricoMi/publish-unit-test-result-action
+      pull-requests: write # For EnricoMi/publish-unit-test-result-action
+      contents: write # For peaceiris/actions-gh-pages
+
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4.1.1
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v2.0.1
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4.0.0
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.android/build-cache
+            /opt/hostedtoolcache/flutter
+            /Users/runner/hostedtoolcache/flutter
+            /Users/runner/.pub-cache
+          key: ${{ runner.os }}-build
+          restore-keys: |
+            ${{ runner.os }}-build
+
+      - name: Configure Flutter
+        uses: subosito/flutter-action@v2.12.0
+        with:
+          channel: stable
+          cache: true
+
+      - name: Configure JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4.0.0
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: gradle
+
+      - name: Run Build
+        uses: gradle/gradle-build-action@v3.0.0
+
+      - name: Run Unit Tests
+        run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/unit-test-results.json
+
+      - name: Publish Unit Test Report
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2.14.0
+        if: always()
+        with:
+          check_name: "Unit Test Results"
+          comment_mode: off
+          files: |
+            build/reports/unit-test-results.json
+
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Cache AVD
+        uses: actions/checkout@v4.1.1
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ env.ANDROID_API_LEVEL }}
+
+      - name: Create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2.30.1
+        with:
+          api-level: ${{ env.ANDROID_API_LEVEL }}
+          arch: x86_64
+          target: google_apis
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
+
+      - name: Run Instrumentation Tests on Android API ${{ env.ANDROID_API_LEVEL }}
+        uses: reactivecircus/android-emulator-runner@v2.30.1
+        with:
+          api-level: ${{ env.ANDROID_API_LEVEL }}
+          arch: x86_64
+          target: google_apis
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
+          disable-animations: true
+          script: flutter test integration_test
+
+      - name: Publish Integration Test Report
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2.14.0
+        if: always()
+        with:
+          check_name: "Integration Test Results"
+          comment_mode: off
+          files: |
+            build/reports/integration-test-results.json
+
       - name: Build Android
         run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64
 
@@ -159,6 +217,66 @@ jobs:
             build/app/outputs/symbols-appbundle
             build/app/reports
 
+  ios:
+    name: iOS
+    runs-on: macos-latest
+    needs:
+      - build
+
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4.1.1
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4.0.0
+        with:
+          path: |
+            ios/Pods
+            /opt/hostedtoolcache/flutter
+            /Users/runner/hostedtoolcache/flutter
+            /Users/runner/.pub-cache
+          key: ${{ runner.os }}-build
+          restore-keys: |
+            ${{ runner.os }}-build
+
+      - name: Configure Flutter
+        uses: subosito/flutter-action@v2.12.0
+        with:
+          channel: stable
+          cache: true
+
+      - name: Run Unit Tests
+        run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/unit-test-results.json
+
+      - name: Publish Unit Test Report
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2.14.0
+        if: always()
+        with:
+          check_name: "Unit Test Results"
+          comment_mode: off
+          files: |
+            build/reports/unit-test-results.json
+
+      - name: Run Instrumentation Tests on ${{ env.IPHONE_DEVICE }} Simulator
+        run: |
+          UDID=$(
+            xcrun xctrace list devices 2>&1 |
+            grep -m 1 "${{ env.IPHONE_DEVICE }}" |
+            awk -F'[()]' '{ print $4 }'
+          )
+          echo $UDID
+          xcrun simctl boot "${UDID:?No Simulator with this name found}"
+          flutter test integration_test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/integration-test-results.json
+
+      - name: Publish Integration Test Report
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2.14.0
+        if: always()
+        with:
+          check_name: "Integration Test Results"
+          comment_mode: off
+          files: |
+            build/reports/integration-test-results.json
+
       - name: Build iOS
         run: flutter build ios --release --obfuscate --split-debug-info build/ios/outputs/symbols --no-codesign
 
@@ -170,6 +288,36 @@ jobs:
           path: |
             build/ios/Release-iphoneos
             build/ios/symbols
+
+  publish:
+    name: Publish Website
+    runs-on: ubuntu-latest
+    if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
+    needs:
+      - build
+      - android
+      - ios
+
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4.1.1
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4.0.0
+        with:
+          path: |
+            /opt/hostedtoolcache/flutter
+            /Users/runner/hostedtoolcache/flutter
+            /Users/runner/.pub-cache
+          key: ${{ runner.os }}-build
+          restore-keys: |
+            ${{ runner.os }}-build
+
+      - name: Configure Flutter
+        uses: subosito/flutter-action@v2.12.0
+        with:
+          channel: stable
+          cache: true
 
       - name: Build Website
         run: flutter build web --release --base-href /flutter-app-template/
