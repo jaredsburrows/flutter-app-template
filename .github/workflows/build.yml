@@ -51,7 +51,7 @@ jobs:
         run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/unit-test-results.json
 
       - name: Publish Build Unit Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.14.0
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2.16.1
         if: always()
         with:
           check_name: "Unit Test Results"
@@ -76,7 +76,7 @@ jobs:
            --web-browser-flag="--disable-web-security"
 
       - name: Publish Build Integration Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.14.0
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2.16.1
         if: always()
         with:
           check_name: "Integration Test Results"
@@ -136,7 +136,7 @@ jobs:
         run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/unit-test-results.json
 
       - name: Publish Android Unit Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.14.0
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2.16.1
         if: always()
         with:
           check_name: "Unit Test Results"
@@ -183,7 +183,7 @@ jobs:
           script: flutter test integration_test
 
       - name: Publish Android Integration Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.14.0
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2.16.1
         if: always()
         with:
           check_name: "Integration Test Results"
@@ -243,7 +243,7 @@ jobs:
         run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/unit-test-results.json
 
       - name: Publish iOS Unit Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.14.0
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2.16.1
         if: always()
         with:
           check_name: "Unit Test Results"
@@ -263,7 +263,7 @@ jobs:
           flutter test integration_test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/integration-test-results.json
 
       - name: Publish iOS Integration Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.14.0
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2.16.1
         if: always()
         with:
           check_name: "Integration Test Results"
