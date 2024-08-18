@@ -52,15 +52,6 @@ class HomePageState extends State<HomePage> {
               child: Text('Drawer Header'),
             ),
             ListTile(
-              title: const Text('Item 1'),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
               leading: const Icon(Icons.home),
               title: const Text('Home'),
               onTap: () {
