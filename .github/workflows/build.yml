@@ -10,8 +10,8 @@ on:
 env:
   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.configureondemand=true -Dkotlin.incremental=false -Dorg.gradle.jvmargs="-Xmx4g -Xms128m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:MaxMetaspaceSize=1024m"
   JAVA_VERSION: 17
-  ANDROID_API_LEVEL: 34
-  IPHONE_DEVICE: "iPhone 14 Pro Max"
+  ANDROID_API_LEVEL: 35
+  IPHONE_DEVICE: "iPhone 15 Pro Max"
 
 jobs:
   build:
@@ -48,38 +48,44 @@ jobs:
         run: flutter analyze
 
       - name: Run Unit Tests
-        run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/unit-test-results.json
+        run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/web/reports/unit-test-results.json
 
       - name: Publish Build Unit Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.0
         if: always()
         with:
-          check_name: "Unit Test Results"
+          check_name: "Web Unit Test Results"
           comment_mode: off
           files: |
             build/reports/unit-test-results.json
+
+      - name: Install Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+          google-chrome --version
 
       - name: Setup chromedriver
         uses: nanasess/setup-chromedriver@v2.2.2
       - run: |
           export DISPLAY=:99
           sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+          chromedriver --version
           chromedriver --port=4444 &
 
       - name: Run Build Integration Tests on Web
         run: |
+          export DISPLAY=:99
           flutter drive \
            --driver=test_driver/integration_test.dart \
-           --target=integration_test/app_test.dart \
-           -d web-server \
-           --web-browser-flag="--autoplay-policy=no-user-gesture-required" \
-           --web-browser-flag="--disable-web-security"
+           --target=integration_test/all_tests.dart \
+           -d chrome
 
       - name: Publish Build Integration Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.0
         if: always()
         with:
-          check_name: "Integration Test Results"
+          check_name: "Web Integration Test Results"
           comment_mode: off
           files: |
             build/reports/integration-test-results.json
@@ -133,13 +139,13 @@ jobs:
         uses: gradle/actions/setup-gradle@v3.3.2
 
       - name: Run Android Unit Tests
-        run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/unit-test-results.json
+        run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/android/unit-test-results.json
 
       - name: Publish Android Unit Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.0
         if: always()
         with:
-          check_name: "Unit Test Results"
+          check_name: "Android Unit Test Results"
           comment_mode: off
           files: |
             build/reports/unit-test-results.json
@@ -161,7 +167,7 @@ jobs:
 
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2.30.1
+        uses: reactivecircus/android-emulator-runner@v2.32.0
         with:
           api-level: ${{ env.ANDROID_API_LEVEL }}
           arch: x86_64
@@ -172,7 +178,7 @@ jobs:
           script: echo "Generated AVD snapshot for caching."
 
       - name: Run Android Instrumentation Tests on Android API ${{ env.ANDROID_API_LEVEL }}
-        uses: reactivecircus/android-emulator-runner@v2.30.1
+        uses: reactivecircus/android-emulator-runner@v2.32.0
         with:
           api-level: ${{ env.ANDROID_API_LEVEL }}
           arch: x86_64
@@ -180,13 +186,13 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
           disable-animations: true
-          script: flutter test integration_test
+          script: flutter test integration_test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/android/integration-test-results.json
 
       - name: Publish Android Integration Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.0
         if: always()
         with:
-          check_name: "Integration Test Results"
+          check_name: "Android Integration Test Results"
           comment_mode: off
           files: |
             build/reports/integration-test-results.json
@@ -195,7 +201,7 @@ jobs:
         run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64
 
       - name: Upload Android Artifacts
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4.3.6
         if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
         with:
           name: ${{ env.REPO_NAME }}-android-${{ github.run_id }}
@@ -240,13 +246,13 @@ jobs:
           cache: true
 
       - name: Run iOS Unit Tests
-        run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/unit-test-results.json
+        run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/ios/unit-test-results.json
 
       - name: Publish iOS Unit Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action/macos@v2.17.0
         if: always()
         with:
-          check_name: "Unit Test Results"
+          check_name: "iOS Unit Test Results"
           comment_mode: off
           files: |
             build/reports/unit-test-results.json
@@ -260,13 +266,13 @@ jobs:
           )
           echo $UDID
           xcrun simctl boot "${UDID:?No Simulator with this name found}"
-          flutter test integration_test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/integration-test-results.json
+          flutter test integration_test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/ios/integration-test-results.json
 
       - name: Publish iOS Integration Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action/macos@v2.17.0
         if: always()
         with:
-          check_name: "Integration Test Results"
+          check_name: "iOS Integration Test Results"
           comment_mode: off
           files: |
             build/reports/integration-test-results.json
@@ -275,7 +281,7 @@ jobs:
         run: flutter build ios --release --obfuscate --split-debug-info build/ios/outputs/symbols --no-codesign
 
       - name: Upload iOS Artifacts
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4.3.6
         if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
         with:
           name: ${{ env.REPO_NAME }}-ios-${{ github.run_id }}
@@ -314,10 +320,10 @@ jobs:
           cache: true
 
       - name: Build Website
-        run: flutter build web --release --base-href /flutter-app-template/
+        run: flutter build web --wasm --release --base-href /flutter-app-template/
 
       - name: Upload Web Artifacts
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4.3.6
         if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
         with:
           name: ${{ env.REPO_NAME }}-web-${{ github.run_id }}
@@ -325,7 +331,7 @@ jobs:
             build/web
 
       - name: Publish Website
-        uses: peaceiris/actions-gh-pages@v3.9.3
+        uses: peaceiris/actions-gh-pages@v4.0.0
         if: github.repository == 'jaredsburrows/flutter-app-template' && github.ref == 'refs/heads/master'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

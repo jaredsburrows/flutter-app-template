@@ -15,12 +15,10 @@ class App extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         primarySwatch: Colors.blue,
-        useMaterial3: true,
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.blue,
-        useMaterial3: true,
       ),
       themeMode: ThemeMode.system,
       home: const HomePage(title: 'Flutter Template'),
