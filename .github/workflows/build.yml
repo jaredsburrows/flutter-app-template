@@ -79,6 +79,7 @@ jobs:
            --web-browser-flag="--autoplay-policy=no-user-gesture-required" \
            --web-browser-flag="--disable-web-security"
 
+      # TODO: no report for flutter drive?
       - name: Publish Build Web Integration Test Report
         uses: EnricoMi/publish-unit-test-result-action@v2.17.0
         if: always()
@@ -86,7 +87,7 @@ jobs:
           check_name: "Web Integration Test Results"
           comment_mode: off
           files: |
-            build/reports/integration-test-results.json
+            build/reports/web/integration-test-results.json
 
   android:
     name: Android
