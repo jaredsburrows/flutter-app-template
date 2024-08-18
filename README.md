@@ -73,7 +73,23 @@ flutter build web
 **Run unit tests with coverage**
 
 ```shell
-flutter test --coverage
+flutter test --test-randomize-ordering-seed=random --coverage
+```
+
+## Integration Testing
+
+**Start chromedriver**
+```shell
+chromedriver --port=4444
+```
+
+**Run integration tests**
+
+```shell
+flutter drive \
+ --driver=test_driver/integration_test.dart \
+ --target=integration_test/all_tests.dart \
+ -d web-server
 ```
 
 ## Reports
@@ -84,20 +100,48 @@ flutter test --coverage
 flutter analyze
 ```
 
-## License
+## Local Debug Run
 
+```shell
+rm -f pubspec.lock && \
+flutter upgrade && \
+flutter pub get && \
+flutter pub upgrade --major-versions && \
+
+osv-scanner -r . && \
+
+dart format . && \
+dart fix --dry-run && \
+dart fix --apply && \
+
+flutter analyze && \
+
+flutter test --test-randomize-ordering-seed=random && \
+
+flutter drive \
+ --driver=test_driver/integration_test.dart \
+ --target=integration_test/all_tests.dart \
+ -d web-server
 ```
-Copyright (C) 2021 Jared Burrows
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+## Local Test Run
 
-   https://www.apache.org/licenses/LICENSE-2.0
+Run locally
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+```shell
+flutter build web --wasm --release --base-href /
+flutter run -d chrome --release
+```
+
+Anyone on network
+
+```shell
+flutter run -d web-server --release --web-port 8080 --web-hostname 0.0.0.0
+```
+
+## Deploy
+
+```shell
+flutter build web --wasm --release --base-href /
+firebase deploy
 ```
