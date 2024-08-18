@@ -47,26 +47,30 @@ jobs:
       - name: Run Analyzer
         run: flutter analyze
 
-      - name: Run Unit Tests
-        run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/unit-test-results.json
+      - name: Run Web Unit Tests
+        run: |
+          flutter test --coverage \
+            --test-randomize-ordering-seed=random \
+            --file-reporter json:build/web/reports/unit-test-results.json
 
-      - name: Publish Build Unit Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.17.0
+      - name: Publish Build Web Unit Test Report
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.0
         if: always()
         with:
-          check_name: "Unit Test Results"
+          check_name: "Web Unit Test Results"
           comment_mode: off
           files: |
-            build/reports/unit-test-results.json
+            build/web/reports/unit-test-results.json
 
       - name: Setup chromedriver
         uses: nanasess/setup-chromedriver@v2.2.2
       - run: |
           export DISPLAY=:99
           sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+          chromedriver --version
           chromedriver --port=4444 &
 
-      - name: Run Build Integration Tests on Web
+      - name: Run Build Web Integration Tests on Web
         run: |
           flutter drive \
            --driver=test_driver/integration_test.dart \
@@ -75,11 +79,11 @@ jobs:
            --web-browser-flag="--autoplay-policy=no-user-gesture-required" \
            --web-browser-flag="--disable-web-security"
 
-      - name: Publish Build Integration Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.17.0
+      - name: Publish Build Web Integration Test Report
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.0
         if: always()
         with:
-          check_name: "Integration Test Results"
+          check_name: "Web Integration Test Results"
           comment_mode: off
           files: |
             build/reports/integration-test-results.json
@@ -132,17 +136,20 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4.0.0
 
-      - name: Run Android Unit Tests
-        run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/unit-test-results.json
+      - name: Run Android Android Unit Tests
+        run: |
+          flutter test --coverage \
+            --test-randomize-ordering-seed=random \
+            --file-reporter json:build/android/reports/unit-test-results.json
 
       - name: Publish Android Unit Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.0
         if: always()
         with:
-          check_name: "Unit Test Results"
+          check_name: "Android Unit Test Results"
           comment_mode: off
           files: |
-            build/reports/unit-test-results.json
+            build/android/reports/unit-test-results.json
 
       - name: Enable KVM group perms
         run: |
@@ -180,16 +187,16 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
           disable-animations: true
-          script: flutter test integration_test
+          script: flutter test integration_test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/android/integration-test-results.json
 
       - name: Publish Android Integration Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.0
         if: always()
         with:
-          check_name: "Integration Test Results"
+          check_name: "Android Integration Test Results"
           comment_mode: off
           files: |
-            build/reports/integration-test-results.json
+            build/reports/android/integration-test-results.json
 
       - name: Build Android
         run: flutter build apk --release --obfuscate --split-debug-info build/app/outputs/symbols-apk/ --target-platform android-arm64
@@ -240,16 +247,19 @@ jobs:
           cache: true
 
       - name: Run iOS Unit Tests
-        run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/unit-test-results.json
+        run: |
+          flutter test --coverage \
+            --test-randomize-ordering-seed=random \
+            --file-reporter json:build/ios/reports/unit-test-results.json
 
       - name: Publish iOS Unit Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action/macos@v2.17.0
         if: always()
         with:
-          check_name: "Unit Test Results"
+          check_name: "iOS Unit Test Results"
           comment_mode: off
           files: |
-            build/reports/unit-test-results.json
+            build/ios/reports/unit-test-results.json
 
       - name: Run iOS Instrumentation Tests on ${{ env.IPHONE_DEVICE }} Simulator
         run: |
@@ -260,16 +270,16 @@ jobs:
           )
           echo $UDID
           xcrun simctl boot "${UDID:?No Simulator with this name found}"
-          flutter test integration_test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/integration-test-results.json
+          flutter test integration_test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/ios/integration-test-results.json
 
       - name: Publish iOS Integration Test Report
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action/macos@v2.17.0
         if: always()
         with:
-          check_name: "Integration Test Results"
+          check_name: "iOS Integration Test Results"
           comment_mode: off
           files: |
-            build/reports/integration-test-results.json
+            build/reports/ios/integration-test-results.json
 
       - name: Build iOS
         run: flutter build ios --release --obfuscate --split-debug-info build/ios/outputs/symbols --no-codesign
@@ -314,7 +324,7 @@ jobs:
           cache: true
 
       - name: Build Website
-        run: flutter build web --release --base-href /flutter-app-template/
+        run: flutter build web --wasm --release --base-href /flutter-app-template/
 
       - name: Upload Web Artifacts
         uses: actions/upload-artifact@v4.3.6
