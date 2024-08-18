@@ -130,7 +130,7 @@ jobs:
           cache: gradle
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3.3.2
+        uses: gradle/actions/setup-gradle@v4.0.0
 
       - name: Run Android Unit Tests
         run: flutter test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/unit-test-results.json
