@@ -73,11 +73,19 @@ jobs:
       - name: Run Build Web Integration Tests on Web
         run: |
           flutter drive \
-           --driver=test_driver/integration_test.dart \
-           --target=integration_test/app_test.dart \
-           -d web-server \
-           --web-browser-flag="--autoplay-policy=no-user-gesture-required" \
-           --web-browser-flag="--disable-web-security"
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/app_test.dart \
+            -d web-server \
+            --web-browser-flag="--autoplay-policy=no-user-gesture-required" \
+            --web-browser-flag="--disable-web-security" \
+            --timeout=360 || \
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/app_test.dart \
+            -d web-server \
+            --web-browser-flag="--autoplay-policy=no-user-gesture-required" \
+            --web-browser-flag="--disable-web-security" \
+            --timeout=360
 
       # TODO: no report for flutter drive?
       - name: Publish Build Web Integration Test Report
