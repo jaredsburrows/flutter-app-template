@@ -1,11 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_app_template/main.dart' as app;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-
   // https://github.com/flutter/flutter/issues/116936
   app.isTesting = true;
 
