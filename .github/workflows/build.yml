@@ -148,7 +148,7 @@ jobs:
           cache: gradle
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4.0.0
+        uses: gradle/actions/setup-gradle@v4.0.1
 
       - name: Run Android Android Unit Tests
         run: |
