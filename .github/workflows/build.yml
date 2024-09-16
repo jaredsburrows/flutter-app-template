@@ -54,7 +54,7 @@ jobs:
             --file-reporter json:build/web/reports/unit-test-results.json
 
       - name: Publish Build Web Unit Test Report
-        uses: EnricoMi/publish-unit-test-result-action@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.1
         if: always()
         with:
           check_name: "Web Unit Test Results"
@@ -94,7 +94,7 @@ jobs:
 
       # TODO: no report for flutter drive?
       - name: Publish Build Web Integration Test Report
-        uses: EnricoMi/publish-unit-test-result-action@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.1
         if: always()
         with:
           check_name: "Web Integration Test Results"
@@ -157,7 +157,7 @@ jobs:
             --file-reporter json:build/android/reports/unit-test-results.json
 
       - name: Publish Android Unit Test Report
-        uses: EnricoMi/publish-unit-test-result-action@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.1
         if: always()
         with:
           check_name: "Android Unit Test Results"
@@ -204,7 +204,7 @@ jobs:
           script: flutter test integration_test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/android/integration-test-results.json || flutter test integration_test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/android/integration-test-results.json
 
       - name: Publish Android Integration Test Report
-        uses: EnricoMi/publish-unit-test-result-action@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.1
         if: always()
         with:
           check_name: "Android Integration Test Results"
@@ -267,7 +267,7 @@ jobs:
             --file-reporter json:build/ios/reports/unit-test-results.json
 
       - name: Publish iOS Unit Test Report
-        uses: EnricoMi/publish-unit-test-result-action/macos@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action/macos@v2.17.1
         if: always()
         with:
           check_name: "iOS Unit Test Results"
@@ -287,7 +287,7 @@ jobs:
           flutter test integration_test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/ios/integration-test-results.json || flutter test integration_test --coverage --test-randomize-ordering-seed=random --file-reporter json:build/reports/ios/integration-test-results.json
 
       - name: Publish iOS Integration Test Report
-        uses: EnricoMi/publish-unit-test-result-action/macos@v2.17.0
+        uses: EnricoMi/publish-unit-test-result-action/macos@v2.17.1
         if: always()
         with:
           check_name: "iOS Integration Test Results"
