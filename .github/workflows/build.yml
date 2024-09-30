@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.0
 
       - name: Cache Build Dependencies
         uses: actions/cache@v4.0.2
@@ -115,7 +115,7 @@ jobs:
 
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.0
 
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v3.5.0
@@ -172,7 +172,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Cache AVD
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.0
         id: avd-cache
         with:
           path: |
@@ -240,7 +240,7 @@ jobs:
 
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.0
 
       - name: Cache iOS Dependencies
         uses: actions/cache@v4.0.2
@@ -318,7 +318,7 @@ jobs:
 
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.0
 
       - name: Cache Dependencies
         uses: actions/cache@v4.0.2
