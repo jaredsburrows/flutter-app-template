@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4.1.7
 
       - name: Cache Build Dependencies
-        uses: actions/cache@v4.0.2
+        uses: actions/cache@v4.1.0
         with:
           path: |
             /opt/hostedtoolcache/flutter
@@ -121,7 +121,7 @@ jobs:
         uses: gradle/wrapper-validation-action@v3.5.0
 
       - name: Cache Android Dependencies
-        uses: actions/cache@v4.0.2
+        uses: actions/cache@v4.1.0
         with:
           path: |
             ~/.gradle/caches
@@ -243,7 +243,7 @@ jobs:
         uses: actions/checkout@v4.1.7
 
       - name: Cache iOS Dependencies
-        uses: actions/cache@v4.0.2
+        uses: actions/cache@v4.1.0
         with:
           path: |
             ios/Pods
@@ -321,7 +321,7 @@ jobs:
         uses: actions/checkout@v4.1.7
 
       - name: Cache Dependencies
-        uses: actions/cache@v4.0.2
+        uses: actions/cache@v4.1.0
         with:
           path: |
             /opt/hostedtoolcache/flutter
